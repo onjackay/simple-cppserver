@@ -14,4 +14,7 @@ public:
 
     struct sockaddr *addr() { return (struct sockaddr *)&addr_; }
     socklen_t *addr_len() { return &addr_len_; }
+
+    const char *ip() const { return inet_ntoa(addr_.sin_addr); }
+    uint16_t port() const { return ntohs(addr_.sin_port); }
 };

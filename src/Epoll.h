@@ -7,7 +7,8 @@ class Channel;
 class Epoll {
 private:
     int epollfd_;
-    std::vector<struct epoll_event> events_;
+    // std::vector<struct epoll_event> events_;
+    struct epoll_event *events_;
 
 public:
     Epoll();
@@ -18,8 +19,11 @@ public:
     void del(int fd);
     // return the number of events
     int wait();
+    std::vector<Channel *> poll(int timeout = -1);
+
     void update_channel(Channel *channel);
-    struct epoll_event &get(int i);
+    // struct epoll_event &get(int i);
+    Channel *get(int i);
 
     int fd() const { return epollfd_; }
 };

@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
+#include <iostream>
 
 Socket::Socket() : sockfd_(socket(AF_INET, SOCK_STREAM, 0)) {
     errif(sockfd_ == -1, "socket create error");
@@ -35,5 +35,6 @@ void Socket::setnonblocking() {
 
 int Socket::accept(InetAddress *addr) {
     int clntfd = ::accept(sockfd_, addr->addr(), addr->addr_len());
+    errif(clntfd == -1, "socket accept error");
     return clntfd;
 }
