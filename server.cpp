@@ -1,8 +1,8 @@
-#include "util.h"
-#include "Epoll.h"
-#include "InetAddress.h"
-#include "Socket.h"
-#include "Channel.h"
+#include "src/util.h"
+#include "src/Epoll.h"
+#include "src/InetAddress.h"
+#include "src/Socket.h"
+#include "src/Channel.h"
 #include <iostream>
 #include <cstring>
 #include <unistd.h>
@@ -14,19 +14,14 @@ constexpr int BUF_SIZE = 1024;
 void handle_read(Channel *channel);
 
 int main() {
-    // auto serv_addr = std::make_unique<InetAddress>("127.0.0.1", 1145);
-    auto serv_addr = new InetAddress("127.0.0.1", 1145);
-    // auto serv_socket = std::make_unique<Socket>();
-    auto serv_socket = new Socket();
-    // serv_socket->bind(serv_addr.get());
-    serv_socket->bind(serv_addr);
+    auto serv_addr = std::make_unique<InetAddress>("127.0.0.1", 1145);
+    auto serv_socket = std::make_unique<Socket>();
+    serv_socket->bind(serv_addr.get());
     serv_socket->listen();
 
-    // auto epoll = std::make_unique<Epoll>();
-    auto epoll = new Epoll();
+    auto epoll = std::make_unique<Epoll>();
     serv_socket->setnonblocking();
-    // auto serv_channel = std::make_unique<Channel>(epoll.get(), serv_socket->fd());
-    auto serv_channel = new Channel(epoll, serv_socket->fd());
+    auto serv_channel = std::make_unique<Channel>(epoll.get(), serv_socket->fd());
     serv_channel->enable_read();
 
     while (true) {
@@ -44,7 +39,7 @@ int main() {
                     " from " << clnt_addr->ip() << ":" << clnt_addr->port() << std::endl;    
                 clnt_socket->setnonblocking();
                 // auto clnt_channel = std::make_unique<Channel>(epoll.get(), clnt_socket->fd());
-                auto clnt_channel = new Channel(epoll, clnt_socket->fd());
+                auto clnt_channel = new Channel(epoll.get(), clnt_socket->fd());
                 clnt_channel->enable_read();
             } 
             else if (channel->revents() & EPOLLIN) {
@@ -55,10 +50,6 @@ int main() {
             }
         }
     }
-    delete serv_addr;
-    delete serv_socket;
-    delete epoll;
-    delete serv_channel;
 }
 
 void handle_read(Channel *channel) {

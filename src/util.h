@@ -1,6 +1,3 @@
-#ifndef UTIL_H
-#define UTIL_H
+#pragma once
 
 void errif(int cond, const char *msg);
-
-#endif
