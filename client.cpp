@@ -16,7 +16,7 @@ int main() {
     Socket *sock = new Socket();
     InetAddress *addr = new InetAddress("127.0.0.1", 1145);
     sock->connect(addr);
-    // sock->setNonBlocking();
+    std::cout << "connected to server fd: " << sock->fd() << std::endl;
 
     Buffer *send_buf = new Buffer();
     Buffer *recv_buf = new Buffer();

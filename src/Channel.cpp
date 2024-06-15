@@ -23,4 +23,6 @@ void Channel::disableAll() {
     loop_->updateChannel(this);
 }
 
-void Channel::handleEvent() { callback_(); }
+void Channel::handleEvent() {
+    loop_->addTask(callback_);
+}
