@@ -10,7 +10,6 @@ class Acceptor {
 private:
     EventLoop *loop_;
     Socket *socket_;
-    InetAddress *addr_;
     Channel *channel_;
     std::function<void(Socket *)> newConnectionCallback_;
 
