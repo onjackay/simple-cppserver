@@ -2,23 +2,23 @@
 
 #include <functional>
 
-constexpr int READ_BUFFER = 1024;
-
 class EventLoop;
 class Socket;
 class Channel;
+class Buffer;
 
 class Connection {
 private:
     EventLoop *loop_;
-    Socket *socket_;
+    Socket *sock_;
     Channel *channel_;
     std::function<void(Socket *)> deleteConnectionCallback_;
+    Buffer *read_buf_;
 
 public:
-    Connection(EventLoop *loop, Socket *socket);
+    Connection(EventLoop *loop, Socket *sock);
     ~Connection();
 
-    void echo(Socket *socket);
+    void echo(Socket *sock);
     void setDeleteConnectionCallback(const std::function<void(Socket *)> &cb);
 };

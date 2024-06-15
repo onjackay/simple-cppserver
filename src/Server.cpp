@@ -21,14 +21,14 @@ Server::Server(EventLoop *loop, int port) : loop_(loop) {
 
 Server::~Server() { delete acceptor_; }
 
-void Server::newConnection(Socket *socket) {
-    auto conn = new Connection(loop_, socket);
+void Server::newConnection(Socket *sock) {
+    auto conn = new Connection(loop_, sock);
     conn->setDeleteConnectionCallback(
         std::bind(&Server::deleteConnection, this, std::placeholders::_1));
-    connections_[socket->fd()] = conn;
+    connections_[sock->fd()] = conn;
 }
 
-void Server::deleteConnection(Socket *socket) {
-    delete connections_[socket->fd()];
-    connections_.erase(socket->fd());
+void Server::deleteConnection(Socket *sock) {
+    delete connections_[sock->fd()];
+    connections_.erase(sock->fd());
 }

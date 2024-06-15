@@ -4,7 +4,7 @@
 
 class Buffer {
 private:
-    std::string buffer_;
+    std::string buf_;
 
 public:
     Buffer() = default;
@@ -13,7 +13,7 @@ public:
     void append(const char *str, ssize_t len);
     void getline();
     
-    ssize_t size() const { return buffer_.size();}
-    const char *c_str() const { return buffer_.c_str(); }
-    void clear() { buffer_.clear(); }
+    ssize_t size() const { return buf_.size();}
+    const char *c_str() const { return buf_.c_str(); }
+    void clear() { buf_.clear(); }
 };

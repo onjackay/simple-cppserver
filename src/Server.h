@@ -18,7 +18,7 @@ public:
     Server(EventLoop *loop, int port);
     ~Server();
 
-    void newConnection(Socket *socket);
-    void deleteConnection(Socket *socket);
-    // void handleReadEvent(Socket *socket);
+    void newConnection(Socket *sock);
+    void deleteConnection(Socket *sock);
+    // void handleReadEvent(Socket *sock);
 };

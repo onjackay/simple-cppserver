@@ -7,12 +7,14 @@ private:
     int fd_;
 public:
     Socket();
-    Socket(int sockfd);
+    Socket(int fd);
     ~Socket();
 
     void bind(InetAddress *addr);
     void listen();
-    void setNonBlocking();
     int accept(InetAddress *addr);
+    void connect(InetAddress *addr);
+    void setNonBlocking();
+
     int fd() const { return fd_; }
 };

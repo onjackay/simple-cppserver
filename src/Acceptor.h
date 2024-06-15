@@ -9,7 +9,7 @@ class Channel;
 class Acceptor {
 private:
     EventLoop *loop_;
-    Socket *socket_;
+    Socket *sock_;
     Channel *channel_;
     std::function<void(Socket *)> newConnectionCallback_;
 

@@ -1,51 +1,61 @@
-#include <iostream>
-#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <sys/socket.h>
 #include <unistd.h>
+
+#include <iostream>
+
+#include "src/Buffer.h"
+#include "src/InetAddress.h"
+#include "src/Socket.h"
 #include "src/util.h"
 
 #define BUF_SIZE 1024
 
-int main()
-{
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    errif(sockfd == -1, "socket create error");
-    std::cout << "socket created: " << sockfd << std::endl;
+int main() {
+    Socket *sock = new Socket();
+    InetAddress *addr = new InetAddress("127.0.0.1", 1145);
+    sock->connect(addr);
+    // sock->setNonBlocking();
 
-    struct sockaddr_in serv_addr;
-    bzero(&serv_addr, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    serv_addr.sin_port = htons(1145);
-
-    errif(connect(sockfd, (sockaddr *)&serv_addr, sizeof(serv_addr)) == -1,
-          "socket connect error");
+    Buffer *send_buf = new Buffer();
+    Buffer *recv_buf = new Buffer();
 
     while (true) {
-        char buf[BUF_SIZE];
-        bzero(&buf, sizeof(buf));
-        scanf("%s", buf);
-        ssize_t write_bytes = write(sockfd, buf, sizeof(buf));
+        send_buf->getline();
+        ssize_t write_bytes =
+            write(sock->fd(), send_buf->c_str(), send_buf->size());
         std::cout << "write bytes: " << write_bytes << std::endl;
         if (write_bytes == -1) {
             printf("socket already disconnected, can't write any more!\n");
             break;
         }
-        bzero(&buf, sizeof(buf));
-        ssize_t read_bytes = read(sockfd, buf, sizeof(buf));
-        if (read_bytes > 0) {
-            printf("message from server: %s\n", buf);
-        }
-        else if (read_bytes == 0) {
-            printf("server socket disconnected!\n");
-            break;
-        }
-        else if (read_bytes == -1) {
-            close(sockfd);
-            errif(true, "socket read error");
+
+        char buf[1024];
+        while (true) {
+            bzero(&buf, sizeof(buf));
+            ssize_t bytes_read = read(sock->fd(), buf, sizeof(buf));
+            if (bytes_read > 0) {
+                recv_buf->append(buf, bytes_read);
+            } else if (bytes_read == -1 && errno == EINTR) {
+                printf("continue reading");
+                continue;
+            } else if (bytes_read == 0) {
+                printf("EOF, server fd %d disconnected\n", sock->fd());
+                exit(EXIT_SUCCESS);
+            }
+
+            if (recv_buf->size() >= send_buf->size()) {
+                printf("message from server fd %d: %s\n", sock->fd(),
+                       recv_buf->c_str());
+                recv_buf->clear();
+                break;
+            }
         }
     }
-    close(sockfd);
+    delete sock;
+    delete addr;
+    delete send_buf;
+    delete recv_buf;
     return 0;
 }

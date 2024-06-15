@@ -13,7 +13,7 @@ Socket::Socket() : fd_(socket(AF_INET, SOCK_STREAM, 0)) {
     errif(fd_ == -1, "socket create error");
 }
 
-Socket::Socket(int sockfd) : fd_(sockfd) {
+Socket::Socket(int fd) : fd_(fd) {
     errif(fd_ == -1, "socket create error");
 }
 
@@ -40,4 +40,9 @@ int Socket::accept(InetAddress *addr) {
     int clntfd = ::accept(fd_, addr->addr(), addr->addrLen());
     errif(clntfd == -1, "socket accept error");
     return clntfd;
+}
+
+void Socket::connect(InetAddress *addr) {
+    errif(::connect(fd_, addr->addr(), *addr->addrLen()) == -1,
+          "socket connect error");
 }
