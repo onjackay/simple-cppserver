@@ -8,11 +8,10 @@
 
 #include "Acceptor.h"
 #include "Channel.h"
+#include "Connection.h"
 #include "EventLoop.h"
 #include "InetAddress.h"
 #include "Socket.h"
-
-constexpr int READ_BUFFER = 1024;
 
 Server::Server(EventLoop *loop, int port) : loop_(loop) {
     acceptor_ = new Acceptor(loop_, port);
@@ -22,29 +21,6 @@ Server::Server(EventLoop *loop, int port) : loop_(loop) {
 
 Server::~Server() { delete acceptor_; }
 
-void Server::handleReadEvent(int sockfd) {
-    char buf[READ_BUFFER];
-    while (true) {
-        bzero(&buf, sizeof(buf));
-        ssize_t bytes_read = read(sockfd, buf, sizeof(buf));
-        if (bytes_read > 0) {
-            printf("message from client fd %d: %s\n", sockfd, buf);
-            write(sockfd, buf, sizeof(buf));
-        } else if (bytes_read == -1 && errno == EINTR) {
-            printf("continue reading");
-            continue;
-        } else if (bytes_read == -1 &&
-                   ((errno == EAGAIN) || (errno == EWOULDBLOCK))) {
-            printf("finish reading once, errno: %d\n", errno);
-            break;
-        } else if (bytes_read == 0) {
-            printf("EOF, client fd %d disconnected\n", sockfd);
-            close(sockfd);
-            break;
-        }
-    }
-}
-
 void Server::newConnection(Socket *socket) {
     InetAddress *addr = new InetAddress();
     Socket *clnt_socket = new Socket(socket->accept(addr));
@@ -53,7 +29,42 @@ void Server::newConnection(Socket *socket) {
               << inet_ntoa(addr->addr_.sin_addr) << ":"
               << ntohs(addr->addr_.sin_port) << std::endl;
     Channel *clnt_channel = new Channel(loop_, clnt_socket->fd());
-    auto cb = std::bind(&Server::handleReadEvent, this, clnt_socket->fd());
+    auto cb = std::bind(&Server::handleReadEvent, this, clnt_socket);
     clnt_channel->setCallback(cb);
     clnt_channel->enableRead();
+
+    // auto conn = new Connection(loop_, socket);
+    // conn->setDeleteConnectionCallback(
+    //     std::bind(&Server::deleteConnection, this, std::placeholders::_1));
+    // connections_[socket->fd()] = conn;
+}
+
+void Server::deleteConnection(Socket *socket) {
+    // std::cout << "delete connection " << socket->fd() << std::endl;
+    // delete connections_[socket->fd()];
+    // connections_.erase(socket->fd());
+    // delete socket;
+}
+
+void Server::handleReadEvent(Socket *socket) {
+    char buf[READ_BUFFER];
+    while (true) {
+        bzero(&buf, sizeof(buf));
+        ssize_t bytes_read = read(socket->fd(), buf, sizeof(buf));
+        if (bytes_read > 0) {
+            printf("message from client fd %d: %s\n", socket->fd(), buf);
+            write(socket->fd(), buf, sizeof(buf));
+        } else if (bytes_read == -1 && errno == EINTR) {
+            printf("continue reading");
+            continue;
+        } else if (bytes_read == -1 &&
+                   ((errno == EAGAIN) || (errno == EWOULDBLOCK))) {
+            printf("finish reading once, errno: %d\n", errno);
+            break;
+        } else if (bytes_read == 0) {
+            printf("EOF, client fd %d disconnected\n", socket->fd());
+            deleteConnection(socket);
+            break;
+        }
+    }
 }
