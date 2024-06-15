@@ -19,7 +19,6 @@ public:
     Connection(EventLoop *loop, Socket *socket);
     ~Connection();
 
-    void acceptConnection();
-    void echo(int sockfd);
+    void echo(Socket *socket);
     void setDeleteConnectionCallback(const std::function<void(Socket *)> &cb);
 };

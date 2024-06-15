@@ -28,22 +28,18 @@ void Server::newConnection(Socket *socket) {
     std::cout << "new connection " << clnt_socket->fd() << " from "
               << inet_ntoa(addr->addr_.sin_addr) << ":"
               << ntohs(addr->addr_.sin_port) << std::endl;
-    Channel *clnt_channel = new Channel(loop_, clnt_socket->fd());
-    auto cb = std::bind(&Server::handleReadEvent, this, clnt_socket);
-    clnt_channel->setCallback(cb);
-    clnt_channel->enableRead();
 
-    // auto conn = new Connection(loop_, socket);
-    // conn->setDeleteConnectionCallback(
-    //     std::bind(&Server::deleteConnection, this, std::placeholders::_1));
-    // connections_[socket->fd()] = conn;
+    auto conn = new Connection(loop_, clnt_socket);
+    conn->setDeleteConnectionCallback(
+        std::bind(&Server::deleteConnection, this, std::placeholders::_1));
+    connections_[socket->fd()] = conn;
 }
 
 void Server::deleteConnection(Socket *socket) {
-    // std::cout << "delete connection " << socket->fd() << std::endl;
-    // delete connections_[socket->fd()];
-    // connections_.erase(socket->fd());
-    // delete socket;
+    std::cout << "delete connection " << socket->fd() << std::endl;
+    delete connections_[socket->fd()];
+    connections_.erase(socket->fd());
+    delete socket;
 }
 
 void Server::handleReadEvent(Socket *socket) {
