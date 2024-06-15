@@ -6,6 +6,7 @@
 #include <functional>
 #include <iostream>
 
+#include "Acceptor.h"
 #include "Channel.h"
 #include "EventLoop.h"
 #include "InetAddress.h"
@@ -14,19 +15,12 @@
 constexpr int READ_BUFFER = 1024;
 
 Server::Server(EventLoop *loop, int port) : loop_(loop) {
-    Socket *sock = new Socket();
-    InetAddress *addr = new InetAddress("127.0.0.1", port);
-    sock->bind(addr);
-    sock->listen();
-    sock->setNonBlocking();
-
-    Channel *channel = new Channel(loop_, sock->fd());
-    auto cb = std::bind(&Server::newConnection, this, sock);
-    channel->setCallback(cb);
-    channel->enableRead();
+    acceptor_ = new Acceptor(loop_, port);
+    acceptor_->setNewConnectionCallback(
+        std::bind(&Server::newConnection, this, std::placeholders::_1));
 }
 
-Server::~Server() {}
+Server::~Server() { delete acceptor_; }
 
 void Server::handleReadEvent(int sockfd) {
     char buf[READ_BUFFER];
