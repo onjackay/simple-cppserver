@@ -1,29 +1,35 @@
 #pragma once
 #include <sys/epoll.h>
+#include <functional>
 
 class Epoll;
+class EventLoop;
 
 class Channel {
 private:
-    Epoll *epoll_;
+    EventLoop *loop_;
     int fd_;
     uint32_t events_;
     uint32_t revents_;
     bool in_epoll_;
+    std::function<void()> callback_;
 
 public:
-    Channel(Epoll *epoll, int fd);
+    Channel(EventLoop *loop, int fd); 
     ~Channel();
 
-    void enable_read();
-    void enable_write();
-    void disable_all();
+    void enableRead();
+    void enableWrite();
+    void disableAll();
+    void handleEvent();
 
-    void set_revents(uint32_t revents) { revents_ = revents; }
-    void set_in_epoll(bool in_epoll) { in_epoll_ = in_epoll; }
+    void setRevents(uint32_t revents) { revents_ = revents; }
+    void setInEpoll(bool in_epoll) { in_epoll_ = in_epoll; }
+    void setCallback(const std::function<void()> &callback) { callback_ = callback; }
+
 
     int fd() const { return fd_; }
     uint32_t events() const { return events_; }
     uint32_t revents() const { return revents_; }
-    bool in_epoll() const { return in_epoll_; }
+    bool inEpoll() const { return in_epoll_; }
 };

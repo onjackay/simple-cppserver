@@ -4,7 +4,7 @@ class InetAddress;
 
 class Socket {
 private:
-    int sockfd_;
+    int fd_;
 public:
     Socket();
     Socket(int sockfd);
@@ -12,7 +12,7 @@ public:
 
     void bind(InetAddress *addr);
     void listen();
-    void setnonblocking();
+    void setNonBlocking();
     int accept(InetAddress *addr);
-    int fd() const { return sockfd_; }
+    int fd() const { return fd_; }
 };

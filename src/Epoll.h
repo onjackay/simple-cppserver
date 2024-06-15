@@ -6,7 +6,7 @@ class Channel;
 
 class Epoll {
 private:
-    int epollfd_;
+    int fd_;
     // std::vector<struct epoll_event> events_;
     struct epoll_event *events_;
 
@@ -14,16 +14,12 @@ public:
     Epoll();
     ~Epoll();
 
-    void add(int fd, uint32_t events);
-    void mod(int fd, uint32_t events);
-    void del(int fd);
-    // return the number of events
-    int wait();
+    // void add(int fd, uint32_t events);
+    // void mod(int fd, uint32_t events);
+    // void del(int fd);
     std::vector<Channel *> poll(int timeout = -1);
 
-    void update_channel(Channel *channel);
-    // struct epoll_event &get(int i);
-    Channel *get(int i);
+    void updateChannel(Channel *channel);
 
-    int fd() const { return epollfd_; }
+    int fd() const { return fd_; }
 };

@@ -1,40 +1,43 @@
 #include "Socket.h"
-#include "util.h"
-#include "InetAddress.h"
 
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
 #include <iostream>
 
-Socket::Socket() : sockfd_(socket(AF_INET, SOCK_STREAM, 0)) {
-    errif(sockfd_ == -1, "socket create error");
+#include "InetAddress.h"
+#include "util.h"
+
+Socket::Socket() : fd_(socket(AF_INET, SOCK_STREAM, 0)) {
+    errif(fd_ == -1, "socket create error");
 }
 
-Socket::Socket(int sockfd) : sockfd_(sockfd) {
-    errif(sockfd_ == -1, "socket create error");
+Socket::Socket(int sockfd) : fd_(sockfd) {
+    errif(fd_ == -1, "socket create error");
 }
 
 Socket::~Socket() {
-    if (sockfd_ != -1) {
-        close(sockfd_);
+    if (fd_ != -1) {
+        close(fd_);
     }
 }
 
 void Socket::bind(InetAddress *addr) {
-    errif(::bind(sockfd_, addr->addr(), *addr->addr_len()) == -1, "socket bind error");
+    errif(::bind(fd_, addr->addr(), *addr->addrLen()) == -1,
+          "socket bind error");
 }
 
 void Socket::listen() {
-    errif(::listen(sockfd_, SOMAXCONN) == -1, "socket listen error");
+    errif(::listen(fd_, SOMAXCONN) == -1, "socket listen error");
 }
 
-void Socket::setnonblocking() {
-    fcntl(sockfd_, F_SETFL, fcntl(sockfd_, F_GETFL) | O_NONBLOCK);
+void Socket::setNonBlocking() {
+    fcntl(fd_, F_SETFL, fcntl(fd_, F_GETFL) | O_NONBLOCK);
 }
 
 int Socket::accept(InetAddress *addr) {
-    int clntfd = ::accept(sockfd_, addr->addr(), addr->addr_len());
+    int clntfd = ::accept(fd_, addr->addr(), addr->addrLen());
     errif(clntfd == -1, "socket accept error");
     return clntfd;
 }
