@@ -19,7 +19,11 @@ ThreadPool::ThreadPool(size_t num_threads) : stop_(false) {
                     task = std::move(tasks_.front());
                     tasks_.pop();
                 }
-                task();
+                if (task == nullptr) {
+                    std::cerr << "task is null" << std::endl;
+                } else {
+                    task();
+                }
             }
         });
     }
@@ -34,15 +38,4 @@ ThreadPool::~ThreadPool() {
     for (std::thread &worker : workers_) {
         worker.join();
     }
-}
-
-void ThreadPool::addTask(std::function<void()> task) {
-    {
-        std::unique_lock<std::mutex> lock(tasks_mtx_);
-        if (stop_) {
-            throw std::runtime_error("Cannot add task to stopped ThreadPool");
-        }
-        tasks_.emplace(task);
-    }
-    cv_.notify_one();
 }

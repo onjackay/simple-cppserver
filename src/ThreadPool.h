@@ -21,28 +21,26 @@ class ThreadPool {
     ThreadPool(size_t num_threads = 8);
     ~ThreadPool();
 
-    void addTask(std::function<void()> task);
-
-    // template <class F, class... Args>
-    // auto addTask(F&& f, Args&&... args)
-    //     -> std::future<typename std::result_of<F(Args...)>::type>;
+    template <class F, class... Args>
+    auto addTask(F&& f, Args&&... args)
+        -> std::future<typename std::result_of<F(Args...)>::type>;
 };
 
-// template <class F, class... Args>
-// auto ThreadPool::addTask(F&& f, Args&&... args)
-//     -> std::future<typename std::result_of<F(Args...)>::type> {
-//     using return_type = typename std::result_of<F(Args...)>::type;
-//     auto task = std::make_shared<std::packaged_task<return_type()>>(
-//         std::bind(std::forward<F>(f), std::forward<Args>(args)...));
+template <class F, class... Args>
+auto ThreadPool::addTask(F&& f, Args&&... args)
+    -> std::future<typename std::result_of<F(Args...)>::type> {
+    using return_type = typename std::result_of<F(Args...)>::type;
+    auto task = std::make_shared<std::packaged_task<return_type()>>(
+        std::bind(std::forward<F>(f), std::forward<Args>(args)...));
 
-//     std::future<return_type> res = task->get_future();
-//     {
-//         std::unique_lock<std::mutex> lock(tasks_mtx_);
-//         if (stop_) {
-//             throw std::runtime_error("addTask on stopped ThreadPool");
-//         }
-//         tasks_.emplace([task]() { (*task)(); });
-//     }
-//     cv_.notify_one();
-//     return res;
-// }
+    std::future<return_type> res = task->get_future();
+    {
+        std::unique_lock<std::mutex> lock(tasks_mtx_);
+        if (stop_) {
+            throw std::runtime_error("addTask on stopped ThreadPool");
+        }
+        tasks_.emplace([task]() { (*task)(); });
+    }
+    cv_.notify_one();
+    return res;
+}

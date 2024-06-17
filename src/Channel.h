@@ -13,7 +13,8 @@ private:
     uint32_t revents_;
     bool in_epoll_;
     bool use_thread_pool_;
-    std::function<void()> callback_;
+    std::function<void()> read_cb_;
+    std::function<void()> write_cb_;
 
 public:
     Channel(EventLoop *loop, int fd); 
@@ -27,7 +28,8 @@ public:
 
     void setRevents(uint32_t revents) { revents_ = revents; }
     void setInEpoll(bool in_epoll) { in_epoll_ = in_epoll; }
-    void setCallback(const std::function<void()> &callback) { callback_ = callback; }
+    void setReadCallback(const std::function<void()> &callback) { read_cb_ = callback; }
+    void setWriteCallback(const std::function<void()> &callback) { write_cb_ = callback; }
     void setUseThreadPool(bool use_thread_pool) { use_thread_pool_ = use_thread_pool; }
 
     int fd() const { return fd_; }

@@ -2,6 +2,7 @@
 
 #include "Epoll.h"
 #include "EventLoop.h"
+#include <iostream>
 
 Channel::Channel(EventLoop *loop, int fd)
     : loop_(loop),
@@ -34,9 +35,26 @@ void Channel::disableAll() {
 }
 
 void Channel::handleEvent() {
-    if (use_thread_pool_) {
-        loop_->addTask(callback_);
-    } else {
-        callback_();
+    if (revents_ & EPOLLIN) {
+        if (read_cb_ == nullptr) {
+            std::cerr << "read callback is null" << std::endl;
+            return;
+        }
+        if (use_thread_pool_) {
+            loop_->addTask(read_cb_);
+        } else {
+            read_cb_();
+        }
+    }
+    if (revents_ & EPOLLOUT) {
+        if (write_cb_ == nullptr) {
+            std::cerr << "write callback is null" << std::endl;
+            return;
+        }
+        if (use_thread_pool_) {
+            loop_->addTask(write_cb_);
+        } else {
+            write_cb_();
+        }
     }
 }

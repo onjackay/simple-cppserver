@@ -15,8 +15,7 @@ Acceptor::Acceptor(EventLoop *loop, int port) : loop_(loop) {
     sock_->listen();
     channel_ = new Channel(loop_, sock_->fd());
     auto cb = std::bind(&Acceptor::acceptConnection, this);
-    // channel_->setReadCallback(cb);
-    channel_->setCallback(cb);
+    channel_->setReadCallback(cb);
     channel_->enableRead();
     channel_->setUseThreadPool(false);
     delete addr;

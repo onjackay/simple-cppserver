@@ -19,8 +19,7 @@ Connection::Connection(EventLoop *loop, Socket *sock)
     read_buf_ = new Buffer();
     channel_ = new Channel(loop_, sock_->fd());
     auto cb = std::bind(&Connection::echo, this, sock);
-    // channel_->setReadCallback(cb);
-    channel_->setCallback(cb);
+    channel_->setReadCallback(cb);
     channel_->enableRead();
     channel_->enableET();
 }
@@ -43,7 +42,6 @@ void Connection::echo(Socket *sock) {
             continue;
         } else if (bytes_read == -1 &&
                    ((errno == EAGAIN) || (errno == EWOULDBLOCK))) {
-            printf("finish reading once\n");
             printf("message from client fd %d: %s\n", sock->fd(),
                    read_buf_->c_str());
             errif(write(sock->fd(), read_buf_->c_str(), read_buf_->size()) == -1,
