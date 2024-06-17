@@ -13,11 +13,12 @@ Acceptor::Acceptor(EventLoop *loop, int port) : loop_(loop) {
     auto addr = new InetAddress("127.0.0.1", port);
     sock_->bind(addr);
     sock_->listen();
-    sock_->setNonBlocking();
     channel_ = new Channel(loop_, sock_->fd());
     auto cb = std::bind(&Acceptor::acceptConnection, this);
+    // channel_->setReadCallback(cb);
     channel_->setCallback(cb);
     channel_->enableRead();
+    channel_->setUseThreadPool(false);
     delete addr;
 }
 

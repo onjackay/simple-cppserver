@@ -19,8 +19,10 @@ Connection::Connection(EventLoop *loop, Socket *sock)
     read_buf_ = new Buffer();
     channel_ = new Channel(loop_, sock_->fd());
     auto cb = std::bind(&Connection::echo, this, sock);
+    // channel_->setReadCallback(cb);
     channel_->setCallback(cb);
     channel_->enableRead();
+    channel_->enableET();
 }
 
 Connection::~Connection() {

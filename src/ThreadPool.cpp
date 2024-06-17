@@ -1,20 +1,23 @@
 #include "ThreadPool.h"
 
+#include <iostream>
+
 ThreadPool::ThreadPool(size_t num_threads) : stop_(false) {
     for (size_t i = 0; i < num_threads; ++i) {
         workers_.emplace_back([this] {
             for (;;) {
                 std::function<void()> task;
                 {
-                    std::unique_lock<std::mutex> lock(this->tasks_mtx_);
-                    this->cv_.wait(lock, [this] {
-                        return this->stop_ || !this->tasks_.empty();
+                    std::unique_lock<std::mutex> lock(tasks_mtx_);
+                    cv_.wait(lock, [this] {
+                        return stop_ || !tasks_.empty();
                     });
-                    if (this->stop_ && this->tasks_.empty()) {
+                    if (stop_ && tasks_.empty()) {
                         return;
                     }
-                    task = std::move(this->tasks_.front());
-                    this->tasks_.pop();
+                    int n = tasks_.size();
+                    task = std::move(tasks_.front());
+                    tasks_.pop();
                 }
                 task();
             }
@@ -37,7 +40,7 @@ void ThreadPool::addTask(std::function<void()> task) {
     {
         std::unique_lock<std::mutex> lock(tasks_mtx_);
         if (stop_) {
-            throw std::runtime_error("Cannot add task to stop_ped ThreadPool");
+            throw std::runtime_error("Cannot add task to stopped ThreadPool");
         }
         tasks_.emplace(task);
     }

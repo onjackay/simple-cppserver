@@ -12,6 +12,7 @@ private:
     uint32_t events_;
     uint32_t revents_;
     bool in_epoll_;
+    bool use_thread_pool_;
     std::function<void()> callback_;
 
 public:
@@ -20,13 +21,14 @@ public:
 
     void enableRead();
     void enableWrite();
+    void enableET();
     void disableAll();
     void handleEvent();
 
     void setRevents(uint32_t revents) { revents_ = revents; }
     void setInEpoll(bool in_epoll) { in_epoll_ = in_epoll; }
     void setCallback(const std::function<void()> &callback) { callback_ = callback; }
-
+    void setUseThreadPool(bool use_thread_pool) { use_thread_pool_ = use_thread_pool; }
 
     int fd() const { return fd_; }
     uint32_t events() const { return events_; }
