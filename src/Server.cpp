@@ -29,7 +29,13 @@ void Server::newConnection(Socket *sock) {
 }
 
 void Server::deleteConnection(Socket *sock) {
-    auto conn = connections_[sock->fd()];
-    connections_.erase(sock->fd());
-    delete conn;
+    if (sock->fd() == -1) {
+        return;
+    }
+    auto it = connections_.find(sock->fd());
+    if (it != connections_.end()) {
+        auto conn = it->second;
+        connections_.erase(it);
+        delete conn;
+    }
 }

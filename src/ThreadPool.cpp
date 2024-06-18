@@ -5,7 +5,7 @@
 ThreadPool::ThreadPool(size_t num_threads) : stop_(false) {
     for (size_t i = 0; i < num_threads; ++i) {
         workers_.emplace_back([this] {
-            for (;;) {
+            while (true) {
                 std::function<void()> task;
                 {
                     std::unique_lock<std::mutex> lock(tasks_mtx_);

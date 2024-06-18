@@ -16,6 +16,7 @@ public:
     std::vector<Channel *> poll(int timeout = -1);
 
     void updateChannel(Channel *channel);
+    void deleteChannel(Channel *channel);
 
     int fd() const { return fd_; }
 };

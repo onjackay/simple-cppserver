@@ -10,7 +10,10 @@
 EventLoop::EventLoop()
     : epoll_(new Epoll()), quit_(false), thread_pool_(new ThreadPool()) {}
 
-EventLoop::~EventLoop() { delete epoll_; }
+EventLoop::~EventLoop() { 
+    delete thread_pool_;
+    delete epoll_; 
+}
 
 void EventLoop::loop() {
     while (!quit_) {

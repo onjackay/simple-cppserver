@@ -34,6 +34,12 @@ void Epoll::updateChannel(Channel *channel) {
     }
 }
 
+void Epoll::deleteChannel(Channel *channel) {
+    int fd = channel->fd();
+    errif(epoll_ctl(fd_, EPOLL_CTL_DEL, fd, nullptr) == -1, "epoll del error");
+    channel->setInEpoll(false);
+}
+
 std::vector<Channel *> Epoll::poll(int timeout) {
     int n = epoll_wait(fd_, events_, MAX_EVENTS, timeout);
     errif(n == -1, "epoll wait error");
