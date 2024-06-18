@@ -39,7 +39,7 @@ auto ThreadPool::addTask(F&& f, Args&&... args)
         if (stop_) {
             throw std::runtime_error("addTask on stopped ThreadPool");
         }
-        tasks_.emplace([task]() { (*task)(); });
+        tasks_.push([task]() { (*task)(); });
     }
     cv_.notify_one();
     return res;

@@ -11,4 +11,4 @@ test:
 	src/Socket.cpp src/Channel.cpp src/EventLoop.cpp src/Server.cpp \
 	src/Acceptor.cpp src/Connection.cpp src/Buffer.cpp src/ThreadPool.cpp -o test
 clean:
-	rm server && rm client
+	rm server client test

@@ -20,5 +20,4 @@ public:
 
     void newConnection(Socket *sock);
     void deleteConnection(Socket *sock);
-    // void handleReadEvent(Socket *sock);
 };

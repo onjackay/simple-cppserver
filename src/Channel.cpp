@@ -1,8 +1,11 @@
 #include "Channel.h"
 
+#include <unistd.h>
+
+#include <iostream>
+
 #include "Epoll.h"
 #include "EventLoop.h"
-#include <iostream>
 
 Channel::Channel(EventLoop *loop, int fd)
     : loop_(loop),
@@ -12,10 +15,15 @@ Channel::Channel(EventLoop *loop, int fd)
       in_epoll_(false),
       use_thread_pool_(true) {}
 
-Channel::~Channel() {}
+Channel::~Channel() {
+    if (fd_ != -1) {
+        close(fd_);
+        fd_ = -1;
+    }
+}
 
 void Channel::enableRead() {
-    events_ |= EPOLLIN;
+    events_ |= EPOLLIN | EPOLLPRI;
     loop_->updateChannel(this);
 }
 
@@ -35,7 +43,7 @@ void Channel::disableAll() {
 }
 
 void Channel::handleEvent() {
-    if (revents_ & EPOLLIN) {
+    if (revents_ & (EPOLLIN | EPOLLPRI)) {
         if (read_cb_ == nullptr) {
             std::cerr << "read callback is null" << std::endl;
             return;

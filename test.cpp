@@ -34,7 +34,7 @@ void oneClient(int msgs, int wait) {
             break;
         }
         int already_read = 0;
-        char buf[1024];  // 这个buf大小无所谓
+        char buf[1024];
         while (true) {
             bzero(&buf, sizeof(buf));
             ssize_t read_bytes = read(sockfd, buf, sizeof(buf));
@@ -42,7 +42,7 @@ void oneClient(int msgs, int wait) {
                 readBuffer->append(buf, read_bytes);
                 already_read += read_bytes;
             } else if (read_bytes == 0) {  // EOF
-                printf("server disconnected!\n");
+                printf("server disconnected! count: %d\n", count);
                 exit(EXIT_SUCCESS);
             }
             if (already_read >= sendBuffer->size()) {

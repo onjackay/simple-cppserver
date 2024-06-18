@@ -20,26 +20,6 @@ Epoll::~Epoll() {
     delete[] events_;
 }
 
-// void Epoll::add(int fd, uint32_t events) {
-//     struct epoll_event ev;
-//     bzero(&ev, sizeof(ev));
-//     ev.events = events;
-//     ev.data.fd = fd;
-//     errif(epoll_ctl(fd_, EPOLL_CTL_ADD, fd, &ev) == -1, "epoll add error");
-// }
-
-// void Epoll::mod(int fd, uint32_t events) {
-//     struct epoll_event ev;
-//     bzero(&ev, sizeof(ev));
-//     ev.events = events;
-//     ev.data.fd = fd;
-//     errif(epoll_ctl(fd_, EPOLL_CTL_MOD, fd, &ev) == -1, "epoll mod error");
-// }
-
-// void Epoll::del(int fd) {
-//     errif(epoll_ctl(fd_, EPOLL_CTL_DEL, fd, nullptr) == -1, "epoll del error");
-// }
-
 void Epoll::updateChannel(Channel *channel) {
     int fd = channel->fd();
     struct epoll_event ev;
@@ -60,7 +40,7 @@ std::vector<Channel *> Epoll::poll(int timeout) {
     std::vector<Channel *> channels;
     channels.reserve(n);
     for (int i = 0; i < n; ++i) {
-        auto channel = static_cast<Channel *>(events_[i].data.ptr);
+        auto channel = reinterpret_cast<Channel *>(events_[i].data.ptr);
         channel->setRevents(events_[i].events);
         channels.push_back(channel);
     }
