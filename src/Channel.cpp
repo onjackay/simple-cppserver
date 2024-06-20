@@ -48,21 +48,13 @@ void Channel::handleEvent() {
             std::cerr << "read callback is null" << std::endl;
             return;
         }
-        if (use_thread_pool_) {
-            loop_->addTask(read_cb_);
-        } else {
-            read_cb_();
-        }
+        read_cb_();
     }
     if (revents_ & EPOLLOUT) {
         if (write_cb_ == nullptr) {
             std::cerr << "write callback is null" << std::endl;
             return;
         }
-        if (use_thread_pool_) {
-            loop_->addTask(write_cb_);
-        } else {
-            write_cb_();
-        }
+        write_cb_();
     }
 }

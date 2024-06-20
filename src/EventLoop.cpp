@@ -8,10 +8,9 @@
 #include "ThreadPool.h"
 
 EventLoop::EventLoop()
-    : epoll_(new Epoll()), quit_(false), thread_pool_(new ThreadPool()) {}
+    : epoll_(new Epoll()), quit_(false) {}
 
 EventLoop::~EventLoop() { 
-    delete thread_pool_;
     delete epoll_; 
 }
 
@@ -26,8 +25,4 @@ void EventLoop::loop() {
 
 void EventLoop::updateChannel(Channel* channel) {
     epoll_->updateChannel(channel);
-}
-
-void EventLoop::addTask(std::function<void()> func) {
-    thread_pool_->addTask(func);
 }

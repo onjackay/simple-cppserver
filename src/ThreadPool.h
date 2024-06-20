@@ -8,6 +8,8 @@
 #include <thread>
 #include <vector>
 
+constexpr int DEFAULT_THREADS = 8;
+
 class ThreadPool {
    private:
     std::vector<std::thread> workers_;
@@ -18,7 +20,7 @@ class ThreadPool {
     bool stop_;
 
    public:
-    ThreadPool(size_t num_threads = 8);
+    ThreadPool(size_t num_threads = DEFAULT_THREADS);
     ~ThreadPool();
 
     template <class F, class... Args>
