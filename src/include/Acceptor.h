@@ -8,15 +8,15 @@ class Channel;
 
 class Acceptor {
 private:
-    EventLoop *loop_;
-    Socket *sock_;
-    Channel *channel_;
-    std::function<void(Socket *)> newConnectionCallback_;
+  EventLoop *loop_;
+  Socket *sock_;
+  Channel *channel_;
+  std::function<void(Socket *)> newConnectionCallback_;
 
 public:
-    Acceptor(EventLoop *loop, int port);
-    ~Acceptor();
+  Acceptor(EventLoop *loop, int port);
+  ~Acceptor();
 
-    void acceptConnection();
-    void setNewConnectionCallback(const std::function<void(Socket *)> &cb);
+  void acceptConnection();
+  void setNewConnectionCallback(const std::function<void(Socket *)> &cb);
 };

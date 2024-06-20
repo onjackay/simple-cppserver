@@ -4,17 +4,18 @@ class InetAddress;
 
 class Socket {
 private:
-    int fd_;
+  int fd_;
+
 public:
-    Socket();
-    Socket(int fd);
-    ~Socket();
+  Socket();
+  Socket(int fd);
+  ~Socket();
 
-    void bind(InetAddress *addr);
-    void listen();
-    int accept(InetAddress *addr);
-    void connect(InetAddress *addr);
-    void setNonBlocking();
+  void bind(InetAddress *addr);
+  void listen();
+  int accept(InetAddress *addr);
+  void connect(InetAddress *addr);
+  void setNonBlocking();
 
-    int fd() const { return fd_; }
+  int fd() const { return fd_; }
 };

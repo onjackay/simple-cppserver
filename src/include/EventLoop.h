@@ -8,14 +8,14 @@ class ThreadPool;
 
 class EventLoop {
 private:
-    Epoll *epoll_;
-    bool quit_;
+  Epoll *epoll_;
+  bool quit_;
 
 public:
-    EventLoop();
-    ~EventLoop();
+  EventLoop();
+  ~EventLoop();
 
-    void loop();
-    void updateChannel(Channel* channel);
-    // void addTask(std::function<void()> func);
+  void loop();
+  void updateChannel(Channel *channel);
+  // void addTask(std::function<void()> func);
 };
