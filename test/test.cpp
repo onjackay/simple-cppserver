@@ -4,11 +4,11 @@
 #include <functional>
 #include <iostream>
 
-#include "src/Buffer.h"
-#include "src/InetAddress.h"
-#include "src/Socket.h"
-#include "src/ThreadPool.h"
-#include "src/util.h"
+#include "Buffer.h"
+#include "InetAddress.h"
+#include "Socket.h"
+#include "ThreadPool.h"
+#include "util.h"
 
 using namespace std;
 

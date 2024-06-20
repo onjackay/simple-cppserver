@@ -1,8 +1,8 @@
-#include "src/Server.h"
+#include "Server.h"
 
 #include <memory>
 
-#include "src/EventLoop.h"
+#include "EventLoop.h"
 
 int main() {
     auto loop = std::make_unique<EventLoop>();
